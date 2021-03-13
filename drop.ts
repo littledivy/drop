@@ -5,8 +5,7 @@ type Rid = number;
 // deno-lint-ignore no-explicit-any
 function _isResource(maybeResource: any) {
   // XXX: Better way to test if parameter is Resource object?
-  return typeof maybeResource == "object" && maybeResource.name &&
-    maybeResource.category;
+  return typeof maybeResource == "object" && !!maybeResource.name;
 }
 
 // deno-lint-ignore no-explicit-any
@@ -34,6 +33,6 @@ export function drop(resource: Resource | Rid | any): boolean {
     // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/op_crates/fetch/26_fetch.js#L870
     resource.close();
     return true;
-  } 
+  }
   return false;
 }
