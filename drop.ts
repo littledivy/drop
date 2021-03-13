@@ -51,9 +51,13 @@ export function drop(resource: Resource | Rid | any): boolean {
   ) {
     resource.destroy();
     return true;
+  } else if (Worker && resource instanceof Worker) {
+    resource.terminate();
+    return true;
   }
   // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/40_fs_events.js#L16
-  if (resource.rid) {
+  // XXX add links for: https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/39_net.js
+  if (Object.getOwnPropertyDescriptor(resource, "rid")!["get"]) {
     try {
       Deno.close(resource.rid);
       return true;
