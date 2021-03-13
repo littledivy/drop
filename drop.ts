@@ -28,11 +28,38 @@ export function drop(resource: Resource | Rid | any): boolean {
     return false;
   }
   // *Magically* determine resource ID from instance :eyes:
-  // @ts-ignore Ignore `--unstable` not detected diagnostic.
-  if (Deno.HttpClient && resource instanceof Deno.HttpClient) {
+  if (
     // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/op_crates/fetch/26_fetch.js#L870
+    // @ts-ignore Ignore `--unstable` not detected diagnostic.
+    (Deno.HttpClient && resource instanceof Deno.HttpClient) ||
+    // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/op_crates/websocket/01_websocket.js#L258.
+    (WebSocket && resource instanceof WebSocket) ||
+    // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/30_files.js#L106
+    (Deno.File && resource instanceof Deno.File)
+  ) {
     resource.close();
     return true;
+  } else if (
+    // https://gpuweb.github.io/gpuweb/#dom-gpudevice-destroy
+    (GPUDevice && resource instanceof GPUDevice) ||
+    // https://gpuweb.github.io/gpuweb/#dom-gputexture-destroy
+    (GPUTexture && resource instanceof GPUTexture) ||
+    // https://gpuweb.github.io/gpuweb/#dom-gpubuffer-destroy
+    (GPUBuffer && resource instanceof GPUBuffer) ||
+    // https://gpuweb.github.io/gpuweb/#dom-gpuqueryset-destroy
+    (GPUQuerySet && resource instanceof GPUQuerySet)
+  ) {
+    resource.destroy();
+    return true;
+  }
+  // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/40_fs_events.js#L16
+  if (resource.rid) {
+    try {
+      Deno.close(resource.rid);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
   return false;
 }
