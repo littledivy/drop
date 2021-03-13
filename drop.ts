@@ -54,15 +54,28 @@ export function drop(resource: Resource | Rid | any): boolean {
   } else if (Worker && resource instanceof Worker) {
     resource.terminate();
     return true;
+    // @ts-ignore Ignore `--unstable` diagnostics
+  } else if (Deno.SignalStream && resource instanceof Deno.SignalStream) {
+    resource.dispose();
+    return true;
   }
   // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/40_fs_events.js#L16
   // XXX add links for: https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/39_net.js
-  if (Object.getOwnPropertyDescriptor(resource, "rid")!["get"]) {
-    try {
-      Deno.close(resource.rid);
-      return true;
-    } catch (_) {
-      return false;
+  if (
+    // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/40_process.js#L38
+    (Deno.Process && resource instanceof Deno.Process)
+    // XXX: Deno does not include the below classes in its namespace.
+    // (Deno.Conn && resource instanceof Deno.Conn) ||
+    // (Deno.Listener && resource instanceof Deno.Listener)
+    // (Deno.Datagram && resource instanceof Deno.Datagram)
+  ) {
+    if (Object.getOwnPropertyDescriptor(resource, "rid")!["get"]) {
+      try {
+        Deno.close(resource.rid);
+        return true;
+      } catch (_) {
+        return false;
+      }
     }
   }
   return false;
