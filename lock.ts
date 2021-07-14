@@ -4,4 +4,4 @@
 //
 // This is needed because tests and resource names are not part
 // of the Deno public API and can change/break in other version.
-export const DENO_VERSION = "1.8.1";
+export const DENO_VERSION = "1.12.0";

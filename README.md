@@ -11,7 +11,7 @@ Here we have a long running loop pinging a local server. The request is stored
 as a resource in Deno's internal resource table.
 
 ```typescript
-import { drop, FetchResource } from "https://deno.land/x/drop@1.8.1/mod.ts";
+import { drop, FetchResource } from "https://deno.land/x/drop@1.12.0/mod.ts";
 
 for (let i = 0; i < 1e4; i++) {
   await fetch("http://localhost:8000/images.png");
@@ -21,11 +21,35 @@ for (let i = 0; i < 1e4; i++) {
 }
 ```
 
-Doing this will create `10000` resources for every request made. Which can take up
-a LOT of memory.
+Doing this will create `10000` resources for every request made. Which can take
+up a LOT of memory.
 
 By adding the `drop(FetchResource)`, you will notice the memory consumption
 decrease drastically.
+
+### Examples
+
+```typescript
+import {
+  drop,
+  TextDecoderResource,
+} from "https://deno.land/x/drop@1.12.0/mod.ts";
+
+const decoder = new TextDecoder();
+decoder.decode(new Uint8Array([1, 2, 3]), { stream: true });
+
+drop(TextDecoderResource);
+```
+
+```typescript
+import { drop } from "https://deno.land/x/drop@1.12.0/mod.ts";
+
+const adapter = await navigator.gpu.requestAdapter();
+const device = await adapter?.requestDevice();
+
+drop(device);
+drop(adapter);
+```
 
 ### License
 

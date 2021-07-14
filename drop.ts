@@ -1,4 +1,4 @@
-import { Resource } from "./resources.ts";
+import { GPUAdapterResource, Resource } from "./resources.ts";
 
 type Rid = number;
 
@@ -17,18 +17,8 @@ export function drop(resource: Resource | Rid | any): boolean {
     } catch (_) {
       return false;
     }
-  } else if (_isResource(resource)) {
-    const rt: Deno.ResourceMap = Deno.resources();
-    for (const rid in rt) {
-      if (rt[rid] == resource.name) {
-        Deno.close(Number(rid));
-        return true;
-      }
-    }
-    return false;
-  }
-  // *Magically* determine resource ID from instance :eyes:
-  if (
+  } // *Magically* determine resource ID from instance :eyes:
+  else if (
     // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/op_crates/fetch/26_fetch.js#L870
     // @ts-ignore Ignore `--unstable` not detected diagnostic.
     (Deno.HttpClient && resource instanceof Deno.HttpClient) ||
@@ -58,6 +48,17 @@ export function drop(resource: Resource | Rid | any): boolean {
   } else if (Deno.SignalStream && resource instanceof Deno.SignalStream) {
     resource.dispose();
     return true;
+  } else if (GPUAdapter && resource instanceof GPUAdapter) {
+    return drop(GPUAdapterResource);
+  } else if (_isResource(resource)) {
+    const rt: Deno.ResourceMap = Deno.resources();
+    for (const rid in rt) {
+      if (rt[rid] == resource.name) {
+        Deno.close(Number(rid));
+        return true;
+      }
+    }
+    return false;
   }
   // https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/40_fs_events.js#L16
   // XXX add links for: https://github.com/denoland/deno/blob/10b99e8eb0e04e8340187b8aafe860405114d0d7/runtime/js/39_net.js
