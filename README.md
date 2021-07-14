@@ -21,7 +21,7 @@ for (let i = 0; i < 1e4; i++) {
 }
 ```
 
-Doing this will create `1e4` resources for every request made. Which can take up
+Doing this will create `10000` resources for every request made. Which can take up
 a LOT of memory.
 
 By adding the `drop(FetchResource)`, you will notice the memory consumption
