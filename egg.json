@@ -1,0 +1,24 @@
+{
+  "$schema": "https://x.nest.land/eggs@0.3.8/src/schema.json",
+  "name": "drop",
+  "entry": "./mod.ts",
+  "description": "`drop` unwanted Deno resources out of memory. yeet.",
+  "homepage": "https://github.com/littledivy/drop",
+  "version": "1.12.0",
+  "releaseType": null,
+  "unstable": false,
+  "unlisted": false,
+  "files": [
+    "*.ts",
+    "README.md",
+    "LICENSE",
+    "examples/**/*"
+  ],
+  "ignore": [
+    ".vscode"
+  ],
+  "checkFormat": false,
+  "checkTests": false,
+  "checkInstallation": false,
+  "check": true
+}
