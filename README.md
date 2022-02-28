@@ -5,6 +5,9 @@
 Manage your programs resource memory. Check out its
 [impact on memory usage](#impact)
 
+
+> **Do not use in production** - A lot of the code depends on internal Deno APIs that can change anytime. Intead, consider consuming your resources (like `await response.arrayBuffer()` on `Response`) to free up memory.
+
 ### Impact
 
 Here we have a long running loop pinging a local server. The request is stored
